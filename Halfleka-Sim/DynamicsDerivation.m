@@ -204,76 +204,26 @@ dJ = simplify(subs(dJ)) %[output:32ae3fa7]
 M = simplify(subs(M));
 G = simplify(subs(G));
 C = simplify(subs(C));
-Q = simplify(subs(Q_t + J'*GRF + H'*F_c));
+Q_contact = simplify(subs(Q_t + J'*GRF + H'*F_c));
+Q_flight = simplify(subs(Q_t + H'*F_c));
+Q_t = simplify(subs(Q_t));
 
 %%
 %[text] ## Manipulator Functions
 dJ_calc_func = matlabFunction(dJ, "File","SimFunctions/dJ_calc_func", "Vars",[th1 th2 ph1 ph2 dth1 dth2 dph1 dph2]);
 J_calc_func = matlabFunction(J, "File","SimFunctions/J_calc_func", "Vars",[th1 th2 ph1 ph2]);
+dH_calc_func = matlabFunction(dH, "File","SimFunctions/dH_calc_func", "Vars",[th1 th2 ph1 ph2 dth1 dth2 dph1 dph2]);
+H_calc_func = matlabFunction(H, "File","SimFunctions/H_calc_func", "Vars",[th1 th2 ph1 ph2]);
 M_calc_func = matlabFunction(M, "File","SimFunctions/M_calc_func", "Vars",[x y th1 th2 ph1 ph2]);
 C_calc_func = matlabFunction(C, "File","SimFunctions/C_calc_func", "Vars",[x y th1 th2 ph1 ph2 dx dy dth1 dth2 dph1 dph2]);
 G_calc_func = matlabFunction(G, "File","SimFunctions/G_calc_func", "Vars",[x y th1 th2 ph1 ph2]);
-Q_calc_func = matlabFunction(Q, "File","SimFunctions/Q_calc_func", "Vars",[th1 th2 ph1 ph2 dth1 dth2 dph1 dph2 f_cx f_cy grf_x grf_y t1 t2 ]);
-%%
-%[text] ## System Acceleration Function
-% comment this section after running once as it takes a while to run
-% get the inverse of M using a proxy to speed up computation
-% N = 6;
-% syms prox [N N]
-% proxinv = inv(prox); 
-% proxinv_M = subs(proxinv, prox, M);
-% 
-% 
-% iM = inv(M);
-% % formula for acceleration of each coordinate
-% accel = proxinv_M*(-G-C+Q);
-% isequal(M, proxinv_M)
-% % export acceleration to callable function
-% accel_Func = matlabFunction(accel,"File","SimFunctions/accel_Func","Vars",[x y th1 th2 ph1 ph2 dx dy dth1 dth2 dph1 dph2 t1 t2 f_cx f_cy grf_t grf_n]);
+Q_t_calc_func = matlabFunction(Q_t, "File","SimFunctions/Q_t_calc_func", "Vars",[th1 th2 ph1 ph2 dth1 dth2 dph1 dph2 t1 t2 ]);
 %%
 %[text] ## Foot kinematics function
-% % get the position and velocity of the foot to use when determining grf
-% kinematics_foot = [subs(p_foot), subs(v_foot)];
-% % export to a callable function
-% foot_Func = matlabFunction(kinematics_foot,"File","SimFunctions/foot_Func","Vars",[x y th1 th2 ph1 ph2 dx dy dth1 dth2 dph1 dph2]);
-%%
-%[text] ## Constraint forces
-% % determine the equation for the constraint of the system
-% dH = sym(zeros(height(H),width(H)));
-% for i=1:height(H)
-%     for j=1:width(H)
-%         dH(i,j) = jacobian(H(i,j),q)*dq;
-%     end
-% end
-% dH = simplify(dH);
-% 
-% phi_eqn = Q_t  + Q_GRF;
-% 
-% % create a proxy inverse matrix to be used in final force calculation
-% N = 2;
-% syms prox [N N]
-% proxinv = inv(prox);
-% divisor = H*proxinv_M*transpose(H);%,"IgnoreAnalyticConstraints",true);
-% inverse = subs(proxinv,prox,divisor);%,"IgnoreAnalyticConstraints",true);
-% 
-% % rearranged manipulator equation
-% constraint = -inverse*(H*proxinv_M*(phi_eqn - C - G) + dH*dq);
-% constraint = subs(constraint);
-% % constraint = simplify(subs(constraint),"IgnoreAnalyticConstraints",true);
-% 
-% % export constraint equation as callable function
-% constraint_force = matlabFunction(constraint,"File","SimFunctions/constraint_Func","Vars",[x y th1 th2 ph1 ph2 dx dy dth1 dth2 dph1 dph2 t1 t2 grf_t grf_n]);
-%%
-%[text] ## Full feedback
-% Ht_calc_func = matlabFunction(transpose(H), "File","SimFunctions/Ht_calc_func", "Vars",[x y th1 th2 ph1 ph2]);
-% J_calc_func = matlabFunction(J, "File","SimFunctions/J_calc_func", "Vars",[x y th1 th2 ph1 ph2]);
-% M_calc_func = matlabFunction(M, "File","SimFunctions/M_calc_func", "Vars",[x y th1 th2 ph1 ph2]);
-% C_calc_func = matlabFunction(C, "File","SimFunctions/C_calc_func", "Vars",[x y th1 th2 ph1 ph2 dx dy dth1 dth2 dph1 dph2]);
-% G_calc_func = matlabFunction(G, "File","SimFunctions/G_calc_func", "Vars",[x y th1 th2 ph1 ph2]);
-%%
-% ff_torque_extra = M*ddq + C + G;% + Q_Fc; % + Jt*(-Kpx)
-% ff_torque_extra = ff_torque_extra(3:4);
-% ff_torque_func = matlabFunction(subs(ff_torque_extra), "File","SimFunctions/ff_torque_func", "Vars",[x y th1 th2 ph1 ph2 dx dy dth1 dth2 dph1 dph2 ddx ddy ddth1 ddth2 ddph1 ddph2 f_cx f_cy])
+% get the position and velocity of the foot to use when determining grf
+kinematics_foot = [subs(p_foot), subs(v_foot)];
+% export to a callable function
+foot_Func = matlabFunction(kinematics_foot,"File","SimFunctions/foot_Func","Vars",[x y th1 th2 ph1 dx dy dth1 dth2 dph1]);
 %%
 %[text] ## Mapping of Angles
 % finding ph1 and ph2
@@ -293,23 +243,6 @@ ph2 = pi - th2  + th5;
 dph2 = getVel(ph1, q, dq);
 ph2_calc = matlabFunction(ph2,"File","SimFunctions/ph2_calc","Vars",[th1 th2]);
 dph2_calc = matlabFunction(dph2,"File","SimFunctions/dph2_calc","Vars",[th1 th2 dth1 dth2]);
-%%
-%[text] ## Mapping to template
-% % x, y
-% legXY = p_foot - p_body;
-% 
-% %r
-% r = sqrt(legXY(1)^2 + legXY(2)^2);
-% th = atan2(legXY(2), legXY(1));
-% 
-% dr = getVel(r, q, dq);
-% dth = getVel(th, q, dq);
-% r_calc = matlabFunction(subs(r),"File","SimFunctions/r_calc","Vars",[th1 th2]);
-% dr_calc = matlabFunction(subs(dr),"File","SimFunctions/dr_calc","Vars",[th1 th2 dth1 dth2]);
-% th_calc = matlabFunction(subs(th),"File","SimFunctions/th_calc","Vars",[th1 th2]);
-% dth_calc = matlabFunction(subs(dth),"File","SimFunctions/dth_calc","Vars",[th1 th2 dth1 dth2]);
-%%
-%[text] ## 
 %%
 %[text] ## Functions
 function rot = rotz(th)
