@@ -32,13 +32,13 @@ function out = Raibert(th1, th2, dth1, dth2, footHeight, time,dx, dy)
 switch state
     case 0 % SETUP
         % Specific commands for first landing
-        VLcmd.r_des = 0.35;
+        VLcmd.r_des = 0.45;
         VLcmd.dr_des =0;
         VLcmd.KPr = 1000;
         VLcmd.KDr =40;
         VLcmd.Fff =0;
 
-        VLcmd.th_des = -pi/2+0.4;
+        VLcmd.th_des = -pi/2;
         VLcmd.KPth = 200;
         VLcmd.KDth = 20;
         if (footHeight <=0)&&(dy<0) % On foot touching ground go to COMPRESSION
@@ -47,7 +47,7 @@ switch state
         end
     case 1 % FLIGHT
         % Brace for impact with high-ish spring
-        VLcmd.r_des = 0.35;
+        VLcmd.r_des = 0.45;
         VLcmd.dr_des =0;
         VLcmd.KPr = 600;
         VLcmd.KDr =20;
@@ -65,7 +65,7 @@ switch state
         end
     case 2 % COMPRESSION
         % Let spring compress
-        VLcmd.r_des = 0.35;
+        VLcmd.r_des = 0.45;
         VLcmd.KPr = 900;
         VLcmd.KDr =10;
 

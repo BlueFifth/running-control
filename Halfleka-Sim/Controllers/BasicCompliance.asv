@@ -20,8 +20,7 @@ function out = BasicCompliance(th1, th2, dth1, dth2, VLcmd)
     Fr = VLcmd.KPr*(VLcmd.r_des - R) + VLcmd.KDr*(VLcmd.dr_des -dR) + VLcmd.Fff;
     Tth = VLcmd.KPth*(VLcmd.th_des - Th) + VLcmd.KDth*(VLcmd.dth_des - dTh) + VLcmd.Tff;
 
-    Fr = real(Fr);
-    Tth = real(Tth);
+    Fr = re
     JT = transpose(J);
     if (th1 < (pi - 35*pi/180)) % Apply electrical break if close to mechanical limits
         t1 = 500*((pi-33*pi/180)-th1) + 5*(0-dth1);
@@ -39,8 +38,6 @@ function out = BasicCompliance(th1, th2, dth1, dth2, VLcmd)
     end
     t1 = real(t1);
     t2 = real(t2);
-    % t1 = 0;
-    % t2 = 0;
     t1 = SpeedTorque(t1, dth1); % set torque limits
     t2 = SpeedTorque(t2, dth2);
     out = [t1, t2, R, Th, dR, dTh, Fr, Tth];

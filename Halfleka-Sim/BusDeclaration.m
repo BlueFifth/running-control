@@ -108,8 +108,16 @@ elems(6).Name = 'dth';
 elems(6).DataType = 'double';
 
 elems(7) = Simulink.BusElement;
-elems(7).Name = 'state';
-elems(7).DataType = 'Enum: States';
+elems(7).Name = 'Fr';
+elems(7).DataType = 'double';
+
+elems(8) = Simulink.BusElement;
+elems(8).Name = 'Tth';
+elems(8).DataType = 'double';
+
+elems(9) = Simulink.BusElement;
+elems(9).Name = 'state';
+elems(9).DataType = 'Enum: States';
 
 Cmd = Simulink.Bus;
 Cmd.Elements = elems;

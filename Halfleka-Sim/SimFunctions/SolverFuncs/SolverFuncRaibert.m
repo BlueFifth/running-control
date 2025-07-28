@@ -58,6 +58,7 @@ function out = SolverFuncRaibert(time, q)
     out.controller = t;
     out.lambda = lambda;
     out.u = u;
+    out.contact = contact;
 
 end
 
