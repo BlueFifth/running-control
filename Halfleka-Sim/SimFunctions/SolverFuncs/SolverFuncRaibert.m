@@ -42,21 +42,26 @@ function out = SolverFuncRaibert(time, q)
     t1 = t(1);
     t2 = t(2);
     u = [t1;t2];
-    lambda = lambda_calc_func(q, dq, u);
+    % u = [0;0];
+    lambda_contact = lambda_contact_calc_func(q, dq, u);
     mu = 0.6;
     contact = 0;
     if foot(2) <=0 %&& norm(foot(3:4)) < 1e-3 % in contact but not moving
-        if lambda(4) >= 0
-            lambda(3) = max(min(lambda(3), lambda(4)*mu), -lambda(4)*mu);
+        if lambda_contact(4) >= 0
+            lambda_contact(3) = max(min(lambda_contact(3), lambda_contact(4)*mu), -lambda_contact(4)*mu);
+            ddq = ddq_contact_calc_func(q, dq, u, lambda_contact);
             contact = 1;
+        else 
+            ddq = ddq_flight_calc_func(q, dq, u, lambda_flight_calc_func(q, dq, u));  
         end
+    else 
+        ddq = ddq_flight_calc_func(q, dq, u, lambda_flight_calc_func(q, dq, u)); 
     end
-    ddq = ddq_calc_func(q, dq, u, lambda, contact);
     % out.dth_c = dth_c;
     out.ddq = ddq;
     out.foot = foot;
     out.controller = t;
-    out.lambda = lambda;
+    out.lambda = lambda_contact;
     out.u = u;
     out.contact = contact;
 

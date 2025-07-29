@@ -60,6 +60,7 @@ elems(4).DataType = 'double';
 
 ConstraintForces = Simulink.Bus;
 ConstraintForces.Elements = elems;
+clear elems
 
 % Foot
 elems(1) = Simulink.BusElement;
@@ -122,4 +123,33 @@ elems(9).DataType = 'Enum: States';
 Cmd = Simulink.Bus;
 Cmd.Elements = elems;
 
+clear elems;
+
+% accelerations
+elems(1) = Simulink.BusElement;
+elems(1).Name = 'ddx';
+elems(1).DataType = 'double';
+
+elems(2) = Simulink.BusElement;
+elems(2).Name = 'ddy';
+elems(2).DataType = 'double';
+
+elems(3) = Simulink.BusElement;
+elems(3).Name = 'ddth1';
+elems(3).DataType = 'double';
+
+elems(4) = Simulink.BusElement;
+elems(4).Name = 'ddth2';
+elems(4).DataType = 'double';
+
+elems(5) = Simulink.BusElement;
+elems(5).Name = 'ddph1';
+elems(5).DataType = 'double';
+
+elems(6) = Simulink.BusElement;
+elems(6).Name = 'ddph2';
+elems(6).DataType = 'double';
+
+Accel = Simulink.Bus;
+Accel.Elements = elems;
 clear elems;

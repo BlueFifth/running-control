@@ -56,7 +56,7 @@ p_foot = p_joint_left + trotz(th1 + ph1 + th3)*[l4;0] - [0;foot_offset];
 
 
 % Position of COMs:
-r_body = p_body + [0;cby] %[output:2d1ea9a1]
+r_body = p_body + [0;cby] %[output:92e16390]
 r_upperLink_left = p_hip_left + trotz(th1)*[cl1x;0];
 r_upperLink_right = p_hip_right + trotz(th2)*[cl1x;0];
 r_lowerLink_left = p_knee_left +trotz(th1+ph1)*[cl2x;cl2y]; % Includes foot
@@ -200,7 +200,7 @@ clear FootLink LowerLink HalfBody UpperLink
 H = simplify(subs(H));
 dH = simplify(subs(dH));
 J = simplify(subs(J));
-dJ = simplify(subs(dJ)) %[output:32ae3fa7]
+dJ = simplify(subs(dJ)) %[output:24a1c786]
 M = simplify(subs(M));
 G = simplify(subs(G));
 C = simplify(subs(C));
@@ -234,13 +234,13 @@ c = sqrt(a^2 + b^2);
 th4 =  (acos((l2^2+c^2-l3^2)/(2*l2*c)) - B); %Cos rule of triangle L2 L3 c minus angle B
 
 ph1 = 2*pi - th4 - th1;
-dph1 = getVel(ph1, q, dq);
+dph1 = simplify(getVel(ph1, q, dq));
 ph1_calc = matlabFunction(ph1,"File","SimFunctions/ph1_calc","Vars",[th1 th2]);
 dph1_calc = matlabFunction(dph1,"File","SimFunctions/dph1_calc","Vars",[th1 th2 dth1 dth2]);
 
 th5 = asin(l2*sin(th4+B)/l3) + B; % Sine rule of triangle L2 L3 c plus angle B
 ph2 = pi - th2  + th5;
-dph2 = getVel(ph1, q, dq);
+dph2 = simplify(getVel(ph2, q, dq));
 ph2_calc = matlabFunction(ph2,"File","SimFunctions/ph2_calc","Vars",[th1 th2]);
 dph2_calc = matlabFunction(dph2,"File","SimFunctions/dph2_calc","Vars",[th1 th2 dth1 dth2]);
 %%
@@ -263,9 +263,9 @@ end
 %[metadata:view]
 %   data: {"layout":"onright","rightPanelPercent":23.6}
 %---
-%[output:2d1ea9a1]
+%[output:92e16390]
 %   data: {"dataType":"symbolic","outputData":{"name":"r_body","value":"\\left(\\begin{array}{c}\nx\\\\\n\\mathrm{cby}+y\n\\end{array}\\right)"}}
 %---
-%[output:32ae3fa7]
+%[output:24a1c786]
 %   data: {"dataType":"symbolic","outputData":{"name":"dJ","value":"\\begin{array}{l}\n\\left(\\begin{array}{cccccc}\n0 & 0 & -{\\textrm{dth}}_1 \\,{\\left(\\sigma_5 +\\sigma_2 +\\frac{349\\,\\cos \\left({\\textrm{th}}_1 \\right)}{2000}\\right)}-{\\textrm{dph}}_1 \\,{\\left(\\sigma_5 +\\sigma_2 \\right)} & 0 & -{\\left({\\textrm{dph}}_1 +{\\textrm{dth}}_1 \\right)}\\,{\\left(\\frac{21\\,\\sin \\left(\\sigma_3 \\right)}{800}+\\sigma_2 \\right)} & 0\\\\\n0 & 0 & -{\\textrm{dph}}_1 \\,{\\left(\\sigma_4 +\\sigma_1 \\right)}-{\\textrm{dth}}_1 \\,{\\left(\\sigma_4 +\\sigma_1 +\\frac{349\\,\\sin \\left({\\textrm{th}}_1 \\right)}{2000}\\right)} & 0 & {\\left({\\textrm{dph}}_1 +{\\textrm{dth}}_1 \\right)}\\,{\\left(\\frac{21\\,\\cos \\left(\\sigma_3 \\right)}{800}-\\sigma_1 \\right)} & 0\n\\end{array}\\right)\\\\\n\\mathrm{}\\\\\n\\textrm{where}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_1 =\\frac{591\\,\\sin \\left({\\textrm{ph}}_1 +{\\textrm{th}}_1 \\right)}{2000}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_2 =\\frac{591\\,\\cos \\left({\\textrm{ph}}_1 +{\\textrm{th}}_1 \\right)}{2000}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_3 ={\\textrm{ph}}_1 +{\\textrm{th}}_1 +\\frac{2\\,\\pi }{9}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_4 =\\frac{21\\,\\sin \\left(\\sigma_6 \\right)}{800}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_5 =\\frac{21\\,\\cos \\left(\\sigma_6 \\right)}{800}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_6 ={\\textrm{ph}}_1 +{\\textrm{th}}_1 +\\frac{31\\,\\pi }{18}\n\\end{array}"}}
 %---
