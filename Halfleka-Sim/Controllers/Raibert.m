@@ -53,7 +53,7 @@ switch state
         VLcmd.KDr =20;
         VLcmd.Fff = 0;
         % Position leg for landing
-        VLcmd.th_des = -acos(x_f/R);
+        VLcmd.th_des = -pi/2; %-acos(x_f/R);
         VLcmd.dth_des = 0;
         VLcmd.KPth = 600;
         VLcmd.KDth = 20;
@@ -66,11 +66,11 @@ switch state
     case 2 % COMPRESSION
         % Let spring compress
         VLcmd.r_des = 0.45;
-        VLcmd.KPr = 900;
+        VLcmd.KPr = 800;
         VLcmd.KDr =10;
 
         % Servo hip
-        VLcmd.th_des = -pi/2 - asin(x_f/R); 
+        VLcmd.th_des = -pi/2; % - asin(x_f/R); 
         VLcmd.dth_des = 0;%(dx*R - dR*R*sin(th))/(cos(th)*R^2);
         VLcmd.KPth = 800;
         VLcmd.KDth = 50;
@@ -86,7 +86,7 @@ switch state
         VLcmd.Fff = 2000;
 
         % Servo hip
-        VLcmd.th_des = -pi/2 - asin(x_f_des/R); 
+        VLcmd.th_des = -pi/2;% - asin(x_f_des/R); 
         VLcmd.dth_des = 0;%(dx*R - dR*R*sin(th))/(cos(th)*R^2);
         VLcmd.KPth = 800;
         VLcmd.KDth = 50;

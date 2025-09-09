@@ -79,7 +79,7 @@ function out = SolverFuncRaibert(time, q)
     out.ddq = ddq;
     out.foot = foot;
     out.controller = t;
-    out.lambda = lambda_out;
+    out.lambda = lambda_;
     out.u = u;
     out.contact = contact;
 

@@ -2,9 +2,9 @@ function out = BasicCompliance(th1, th2, dth1, dth2, VLcmd)
 
     [R, Th] = BalekaKinematicsRth(th1, th2);
 
-
-    R = real(R);
-    Th = real(Th);
+    % 
+    % R = real(R);
+    % Th = real(Th);
 
     [J11, J12, J21, J22]= BalekaJacobianRth(th1, th2);
     J = [J11, J12;J21, J22];
@@ -14,14 +14,14 @@ function out = BasicCompliance(th1, th2, dth1, dth2, VLcmd)
     dR = dsmd(1);
     dTh = dsmd(2);
 
-    dR = real(dR);
-    dTh = real(dTh);
+    % dR = real(dR);
+    % dTh = real(dTh);
 
     Fr = VLcmd.KPr*(VLcmd.r_des - R) + VLcmd.KDr*(VLcmd.dr_des -dR) + VLcmd.Fff;
     Tth = VLcmd.KPth*(VLcmd.th_des - Th) + VLcmd.KDth*(VLcmd.dth_des - dTh) + VLcmd.Tff;
 
-    Fr = real(Fr);
-    Tth = real(Tth);
+    % Fr = real(Fr);
+    % Tth = real(Tth);
     JT = transpose(J);
     if (th1 < (pi - 35*pi/180)) % Apply electrical break if close to mechanical limits
         t1 = 500*((pi-33*pi/180)-th1) + 5*(0-dth1);

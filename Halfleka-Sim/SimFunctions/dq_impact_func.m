@@ -8,9 +8,9 @@ dph2 = dph2_calc(th1, th2, dq(3), dq(4));
 
 M = M_calc_func(x, y, th1, th2, ph1, ph2);
 J = J_calc_func(th1, th2, ph1, ph2);
-% H = H_calc_func(th1, th2, ph1, ph2);
-% K = [H;J];
-K = J;
+H = H_calc_func(th1, th2, ph1, ph2);
+K = [H;J];
+% K = J;
 
 dq = [dq,dph1,dph2];
 
