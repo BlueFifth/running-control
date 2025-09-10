@@ -80,10 +80,10 @@ switch state
         end
     case 3 % THRUST
         % Apply upwards thrust force
-        % VLcmd.r_des = 0.7;
-        VLcmd.KPr = 0;
+        VLcmd.r_des = 0.6;
+        VLcmd.KPr = 5000;
         VLcmd.KDr =0;
-        VLcmd.Fff = 2000;
+        VLcmd.Fff = 0;% 2000;
 
         % Servo hip
         VLcmd.th_des = -pi/2;% - asin(x_f_des/R); 

@@ -1,0 +1,123 @@
+function out = SolverFuncRaibert(time, q)
+    x = q(1);
+    y = q(2);
+    th1 = q(3);
+    th2 = q(4);
+    th3 = q(5);
+    th4 = q(6);
+
+    dx = q(7);
+    dy = q(8);
+    dth1 = q(9);
+    dth2 = q(10);
+    dth3 = q(11);
+    dth4 = q(12);
+
+    ph1 = ph1_calc(th1, th2);
+    ph2 = ph2_calc(th1, th2);
+    dph1 = dph1_calc(th1, th2, dth1, dth2);
+    dph2 = dph2_calc(th1, th2, dth1, dth2);
+
+    ph3 = ph1_calc(th3, th4);
+    ph4 = ph2_calc(th3, th4);
+    dph3 = dph1_calc(th3, th4, dth3, dth4);
+    dph4 = dph2_calc(th3, th4, dth3, dth4);
+
+    q = [x; y; th1; th2; th3; th4; ph1; ph2; ph3; ph4];
+    dq = [dx; dy; dth1; dth2; dth3; dth4; dph1; dph2; dph3; dph4];
+
+    
+    % Foot dynamics
+    foot_f = foot_Func(x, y, th1, th2, ph1, dx, dy, dth1, dth2, dph1);
+    foot_f = reshape(foot_f, [4,1]);
+
+    foot_b = foot_Func(x, y, th3, th4, ph3, dx, dy, dth3, dth4, dph3);
+    foot_b = reshape(foot_b, [4,1]);
+
+    persistent groundheight_f groundheight_b contact_f contact_b
+    if time == 0
+        groundheight_f = 0;
+        groundheight_b = 0;
+        contact_f = false;
+        contact_b = false;
+    end
+    
+    t = HopTest(th1, th2, th3, th4, dth1, dth2, dth3, dth4, foot_f(2),foot_b(2), time, dy);
+    t1 = t(1);
+    t2 = t(2);
+    t3 = t(9);
+    t4 = t(10);
+
+    u = [t1;t2;t3;t4];
+    mu = 0.6;
+
+    % lambda_f_contact = lambda_contact_calc_func(q, dq, u);
+    % Find if feet are contacting:
+    if ~contact_f && (foot_f(2) <= 0) %in contact but not moving
+            contact_f = true;
+            groundheight_f = foot_f(2) + 1e-5; 
+    end
+    if ~contact_b && (foot_b(2) <= 0) %in contact but not moving
+            contact_b = true;
+            groundheight_b = foot_b(2) + 1e-5; 
+    end
+
+    % FRONT ONLY
+    if (contact_f)&&(~contact_b)
+ 
+        if (foot_f(2))<groundheight_f - 1e-5 % Foot slipping below ground - correct groundheight
+            groundheight_f = foot_f(2) + 1e-5;
+        end
+
+        if foot_f(4)>1e-3 && foot_f(2)>groundheight_f %% Velocity positive, taking off
+            contact_f = false;
+        end
+        lambda_f_contact = lambda_f_contact_calc_func(q, dq, u);
+        if lambda_f_contact(6) >= 0 % Ground reaction force positive - apply it
+            lambda_f_contact(5) = max(min(lambda_f_contact(5), lambda_f_contact(5)*mu), -lambda_f_contact(5)*mu);
+            lambda_out = [lambda_f_contact;0;0];
+            ddq = ddq_f_contact_calc_func(q, dq, u, lambda_f_contact);
+        else % Ground reaction force -ve, ignore it
+            lambda = lambda_flight_calc_func(q, dq, u);
+            ddq = ddq_flight_calc_func(q, dq, u, lambda);
+            lambda_out = [lambda;0;0;0;0];
+        end
+        % BACK ONLY
+    elseif (~contact_f)&&(contact_b)
+        if (foot_b(2))<groundheight_b - 1e-5 % Foot slipping below ground - correct groundheight
+            groundheight_b = foot_b(2) + 1e-5;
+        end
+
+        if foot_b(4)>1e-3 && foot_b(2)>groundheight_b %% Velocity positive, taking off
+            contact_b = false;
+        end
+        lambda_b_contact = lambda_b_contact_calc_func(q, dq, u);
+        if lambda_b_contact(6) >= 0 % Ground reaction force positive - apply it
+            lambda_b_contact(5) = max(min(lambda_b_contact(5), lambda_b_contact(5)*mu), -lambda_b_contact(5)*mu);
+            lambda_out = [lambda_b_contact(1:4);0;lambda_b_contact(5:6)];
+            ddq = ddq_b_contact_calc_func(q, dq, u, lambda_b_contact); % THURSDAY GAVIN START HERE
+        else % Ground reaction force -ve, ignore it
+            lambda = lambda_flight_calc_func(q, dq, u);
+            ddq = ddq_flight_calc_func(q, dq, u, lambda);
+            lambda_out = [lambda;0;0;0;0];
+        end
+    else
+
+
+
+
+        lambda = lambda_flight_calc_func(q, dq, u);
+        ddq = ddq_flight_calc_func(q, dq, u, lambda);
+        lambda_out = [lambda;0;0];
+    end
+
+    % out.dth_c = dth_c;
+    out.ddq = ddq;
+    out.foot = foot;
+    out.controller = t;
+    out.lambda = lambda_out;
+    out.u = u;
+    out.contact = contact;
+
+end
+
