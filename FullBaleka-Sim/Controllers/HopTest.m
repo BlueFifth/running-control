@@ -36,6 +36,7 @@ switch state
         VLcmd_f.KPr = 1000;
         VLcmd_f.KDr =40;
         VLcmd_f.th_des = -pi/2;
+        VLcmd_f.dth_des = 0;
         VLcmd_f.KPth = 200;
         VLcmd_f.KDth = 20;
 
@@ -44,6 +45,7 @@ switch state
         VLcmd_b.KPr = 1000;
         VLcmd_b.KDr =40;
         VLcmd_b.th_des = -pi/2;
+        VLcmd_b.dth_des = 0;
         VLcmd_b.KPth = 200;
         VLcmd_b.KDth = 20;
 
@@ -65,10 +67,10 @@ switch state
         VLcmd_f.KDth = 20;
 
         % Back leg retract to do nothing
-        VLcmd_b.r_des = 0.25;
+        VLcmd_b.r_des = 0.2;
         VLcmd_b.dr_des =0;
-        VLcmd_b.KPr = 600;
-        VLcmd_b.KDr =20;
+        VLcmd_b.KPr = 400;
+        VLcmd_b.KDr =30;
         VLcmd_b.Fff = 0;
         VLcmd_b.th_des = -pi/2; 
         VLcmd_b.dth_des = 0;
@@ -76,22 +78,22 @@ switch state
         VLcmd_b.KDth = 20;
 
         if (footHeight_f <=0)&&(dy<0) % On foot touching ground go to COMPRESSION
-            state = 2;
+            state = 4;
             landTime = time;
         end
     case 2 % COMPRESSION (both)
         % Let spring compress
         VLcmd_f.r_des = 0.45;
-        VLcmd_f.KPr = 800;
-        VLcmd_f.KDr =10;
+        VLcmd_f.KPr = 2000;
+        VLcmd_f.KDr =75;
         VLcmd_f.th_des = -pi/2;
         VLcmd_f.dth_des = 0;
         VLcmd_f.KPth = 800;
         VLcmd_f.KDth = 50;
 
         VLcmd_b.r_des = 0.45;
-        VLcmd_b.KPr = 800;
-        VLcmd_b.KDr =10;
+        VLcmd_b.KPr = 2000;
+        VLcmd_b.KDr =75;
         VLcmd_b.th_des = -pi/2;
         VLcmd_b.dth_des = 0;
         VLcmd_b.KPth = 800;
@@ -125,8 +127,8 @@ switch state
     case 4 % COMPRESSION (front)
         % Let spring compress
         VLcmd_f.r_des = 0.45;
-        VLcmd_f.KPr = 800;
-        VLcmd_f.KDr =10;
+        VLcmd_f.KPr = 2000;
+        VLcmd_f.KDr =75;
         VLcmd_f.th_des = -pi/2;
         VLcmd_f.dth_des = 0;
         VLcmd_f.KPth = 800;
@@ -165,10 +167,10 @@ switch state
         VLcmd_b.KDth = 20;
 
         % Front leg retract to do nothing
-        VLcmd_f.r_des = 0.25;
+        VLcmd_f.r_des = 0.2;
         VLcmd_f.dr_des =0;
-        VLcmd_f.KPr = 600;
-        VLcmd_f.KDr =20;
+        VLcmd_f.KPr = 400;
+        VLcmd_f.KDr =30;
         VLcmd_f.Fff = 0;
         VLcmd_f.th_des = -pi/2; 
         VLcmd_f.dth_des = 0;
@@ -183,8 +185,8 @@ switch state
     case 7 % Compression (back foot)
         % Let spring compress
         VLcmd_b.r_des = 0.45;
-        VLcmd_b.KPr = 800;
-        VLcmd_b.KDr =10;
+        VLcmd_b.KPr = 2000;
+        VLcmd_b.KDr =75;
         VLcmd_b.th_des = -pi/2;
         VLcmd_b.dth_des = 0;
         VLcmd_b.KPth = 800;

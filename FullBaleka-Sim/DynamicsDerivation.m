@@ -39,7 +39,7 @@ syms cby cl1x cl2x cl2y cl3x 'real' %
 %[text] ## Position and velocity
 % done in terms of global [x;y] - starting from the body's initial position
 
-p_body = [x;y]; % body centre position %[output:04003e60]
+p_body = [x;y]; % body centre position
 % Front leg
 % left
 p_f_hip_left = p_body - [l5/2; 0];
@@ -70,7 +70,7 @@ p_b_foot = p_b_joint_left + trotz(th3 + ph3 + thl)*[l4;0] - [0;foot_offset];
 
 
 % Position of COMs:
-r_body = p_body + [0;cby]
+r_body = p_body + [0;cby] %[output:32ef12f1]
 
 r_f_upperLink_left = p_f_hip_left + trotz(th1)*[cl1x;0];
 r_f_upperLink_right = p_f_hip_right + trotz(th2)*[cl1x;0];
@@ -198,9 +198,9 @@ end
 dH = simplify(dH);
 
 % Ground contact forces
-syms grf_fy grf_fx grf_by grf_bx'real'
+syms grf_fy grf_fx grf_bx grf_by 'real'
 
-GRF = [grf_x; grf_y; grf_bx; grf_by];
+GRF = [grf_fx; grf_fy; grf_bx; grf_by];
 
 J_f = simplify(jacobian(p_f_foot, q));
 J_b = simplify(jacobian(p_b_foot, q));
@@ -239,12 +239,12 @@ grav = 9.81;
 
 thl = FootLink.th3;
 
-mb = HalfBody.m;
+mb = FullBody.m;
 ml1 = UpperLink.m;
 ml2 = FootLink.m;
 ml3 = LowerLink.m;
 
-Ib = HalfBody.I;
+Ib = FullBody.I;
 Il1 = UpperLink.I;
 Il2 = FootLink.I;
 Il3 = UpperLink.I;
@@ -253,9 +253,9 @@ l1 = UpperLink.l;
 l2 = FootLink.l2;
 l3 = LowerLink.l;
 l4 = FootLink.l4;
-l5 = HalfBody.l;
+l5 = FullBody.l;
 foot_offset = FootLink.offset;
-cby = HalfBody.cmy;
+cby = FullBody.cmy;
 cl1x = UpperLink.cmx;
 cl2x = FootLink.cmx;
 cl2y = FootLink.cmy;
@@ -269,11 +269,8 @@ clear FootLink LowerLink HalfBody UpperLink
 H = simplify(subs(H));
 dH = simplify(subs(dH));
 
-H_b = simplify(subs(H_b));
-dH_b = simplify(subs(dH_b));
-
 J_f = simplify(subs(J_f));
-dJ_f = simplify(subs(dJ_f)); %[output:32ef12f1]
+dJ_f = simplify(subs(dJ_f));
 
 J_b = simplify(subs(J_b));
 dJ_b = simplify(subs(dJ_b));
@@ -302,6 +299,8 @@ dH_calc_func = matlabFunction(dH, "File","SimFunctions/GeneratedFuncs/dH_calc_fu
 J_f_calc_func = matlabFunction(J_f, "File","SimFunctions/GeneratedFuncs/J_f_calc_func", "Vars",[th1 th2 th3 th4 ph1 ph2 ph3 ph4]);
 dJ_f_calc_func = matlabFunction(dJ_f, "File","SimFunctions/GeneratedFuncs/dJ_f_calc_func", "Vars",[th1 th2 th3 th4 ph1 ph2 ph3 ph4 dth1 dth2 dth3 dth4 dph1 dph2 dph3 dph4]);
 
+J_b_calc_func = matlabFunction(J_b, "File","SimFunctions/GeneratedFuncs/J_b_calc_func", "Vars",[th1 th2 th3 th4 ph1 ph2 ph3 ph4]);
+dJ_b_calc_func = matlabFunction(dJ_b, "File","SimFunctions/GeneratedFuncs/dJ_b_calc_func", "Vars",[th1 th2 th3 th4 ph1 ph2 ph3 ph4 dth1 dth2 dth3 dth4 dph1 dph2 dph3 dph4]);
 
 
 %%
@@ -347,11 +346,8 @@ end
 %[appendix]{"version":"1.0"}
 %---
 %[metadata:view]
-%   data: {"layout":"onright","rightPanelPercent":16.2}
-%---
-%[output:04003e60]
-%   data: {"dataType":"error","outputData":{"errorType":"runtime","text":"Unrecognized function or variable 'y'."}}
+%   data: {"layout":"onright","rightPanelPercent":26.8}
 %---
 %[output:32ef12f1]
-%   data: {"dataType":"symbolic","outputData":{"name":"dJ","value":"\\begin{array}{l}\n\\left(\\begin{array}{cccccc}\n0 & 0 & -{\\textrm{dth}}_1 \\,\\left(\\sigma_5 +\\sigma_2 +\\frac{349\\,\\cos \\left({\\textrm{th}}_1 \\right)}{2000}\\right)-{\\textrm{dph}}_1 \\,\\left(\\sigma_5 +\\sigma_2 \\right) & 0 & -\\left({\\textrm{dph}}_1 +{\\textrm{dth}}_1 \\right)\\,\\left(\\frac{21\\,\\sin \\left(\\sigma_3 \\right)}{800}+\\sigma_2 \\right) & 0\\\\\n0 & 0 & -{\\textrm{dph}}_1 \\,\\left(\\sigma_4 +\\sigma_1 \\right)-{\\textrm{dth}}_1 \\,\\left(\\sigma_4 +\\sigma_1 +\\frac{349\\,\\sin \\left({\\textrm{th}}_1 \\right)}{2000}\\right) & 0 & \\left({\\textrm{dph}}_1 +{\\textrm{dth}}_1 \\right)\\,\\left(\\frac{21\\,\\cos \\left(\\sigma_3 \\right)}{800}-\\sigma_1 \\right) & 0\n\\end{array}\\right)\\\\\n\\\\\n\\textrm{where}\\\\\n\\\\\n\\;\\;\\sigma_1 =\\frac{591\\,\\sin \\left({\\textrm{ph}}_1 +{\\textrm{th}}_1 \\right)}{2000}\\\\\n\\\\\n\\;\\;\\sigma_2 =\\frac{591\\,\\cos \\left({\\textrm{ph}}_1 +{\\textrm{th}}_1 \\right)}{2000}\\\\\n\\\\\n\\;\\;\\sigma_3 ={\\textrm{ph}}_1 +{\\textrm{th}}_1 +\\frac{2\\,\\pi }{9}\\\\\n\\\\\n\\;\\;\\sigma_4 =\\frac{21\\,\\sin \\left(\\sigma_6 \\right)}{800}\\\\\n\\\\\n\\;\\;\\sigma_5 =\\frac{21\\,\\cos \\left(\\sigma_6 \\right)}{800}\\\\\n\\\\\n\\;\\;\\sigma_6 ={\\textrm{ph}}_1 +{\\textrm{th}}_1 +\\frac{31\\,\\pi }{18}\n\\end{array}"}}
+%   data: {"dataType":"symbolic","outputData":{"name":"r_body","value":"\\left(\\begin{array}{c}\nx\\\\\n\\mathrm{cby}+y\n\\end{array}\\right)"}}
 %---
