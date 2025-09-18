@@ -43,6 +43,6 @@ function out = BasicCompliance(th1, th2, dth1, dth2, VLcmd)
     % t2 = 0;
     t1 = SpeedTorque(t1, dth1); % set torque limits
     t2 = SpeedTorque(t2, dth2);
-    out = [t1, t2, R, Th, dR, dTh, Fr, Tth];
+    out = real([t1, t2, R, Th, dR, dTh, Fr, Tth]);
 end
   

@@ -8,7 +8,7 @@ function out = Raibert(th1, th2, dth1, dth2, footHeight, time,dx, dy)
     % 3 = THRUST
     
     % Params:
-    Ts = 0.2;
+    Ts = 0.15;
     Kdx = 0.1;
     dx_d = 2;
 
@@ -38,12 +38,14 @@ switch state
         VLcmd.KDr =40;
         VLcmd.Fff =0;
 
-        VLcmd.th_des = -pi/2;
+        VLcmd.th_des = -pi/2 +asin(x_f/R);
         VLcmd.KPth = 200;
         VLcmd.KDth = 20;
         if (footHeight <=0)&&(dy<0) % On foot touching ground go to COMPRESSION
             state = 2;
             landTime = time;
+            x_f_des = x_f;
+
         end
     case 1 % FLIGHT
         % Brace for impact with high-ish spring
@@ -53,7 +55,7 @@ switch state
         VLcmd.KDr =20;
         VLcmd.Fff = 0;
         % Position leg for landing
-        VLcmd.th_des = -pi/2; %-acos(x_f/R);
+        VLcmd.th_des = -pi/2 +asin(x_f/R);
         VLcmd.dth_des = 0;
         VLcmd.KPth = 600;
         VLcmd.KDth = 20;
@@ -61,16 +63,15 @@ switch state
         if (footHeight <=0)&&(dy<0) % On foot touching ground go to COMPRESSION
             state = 2;
             landTime = time;
-            x_f_des = x_f;
         end
     case 2 % COMPRESSION
         % Let spring compress
         VLcmd.r_des = 0.45;
-        VLcmd.KPr = 800;
+        VLcmd.KPr = 900;
         VLcmd.KDr =10;
 
         % Servo hip
-        VLcmd.th_des = -pi/2; % - asin(x_f/R); 
+        VLcmd.th_des = -pi/2- asin(x_f_des/R); 
         VLcmd.dth_des = 0;%(dx*R - dR*R*sin(th))/(cos(th)*R^2);
         VLcmd.KPth = 800;
         VLcmd.KDth = 50;
@@ -86,7 +87,7 @@ switch state
         VLcmd.Fff = 0;% 2000;
 
         % Servo hip
-        VLcmd.th_des = -pi/2;% - asin(x_f_des/R); 
+        VLcmd.th_des = -pi/2 - asin(x_f_des/R); 
         VLcmd.dth_des = 0;%(dx*R - dR*R*sin(th))/(cos(th)*R^2);
         VLcmd.KPth = 800;
         VLcmd.KDth = 50;
