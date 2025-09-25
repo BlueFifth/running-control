@@ -250,3 +250,19 @@ elems(10).DataType = 'double';
 Accel = Simulink.Bus;
 Accel.Elements = elems;
 clear elems;
+
+
+% Contact
+clear elems;
+
+elems(1) = Simulink.BusElement;
+elems(1).Name = 'contact_f';
+elems(1).DataType = 'double';
+
+elems(2) = Simulink.BusElement;
+elems(2).Name = 'contact_b';
+elems(2).DataType = 'double';
+
+Contact = Simulink.Bus;
+Contact.Elements = elems;
+clear elems;
