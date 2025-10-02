@@ -121,9 +121,13 @@ C = simplify(C);
 %%
 %[text] ## Generalised Forces
 % Torque at motors (ignoring damping for now)
-syms t1 t2 b 'real'
-
-torque = [0;0;t1;t2;0;0];
+syms t1 t2 b bho br 'real'
+% Boom compensation:
+m_bot = mb + 2*ml1 + ml2 + ml3;
+phi = asin((y-bho)/br)
+Fyg = m_bot*grav*cos(phi);
+Fyc = m_bot*sin(phi)*(dy/cos(phi))^2/br
+torque = [0;Fyg+Fyc-m_bot*grav;t1;t2;0;0];
 B = diag([0, 0, b, b, 0, 0]);
 
 
@@ -192,9 +196,11 @@ cl2x = FootLink.cmx;
 cl2y = FootLink.cmy;
 cl3x = LowerLink.cmx;
 
+br = Boom.pitchRadius;
+bho = Boom.pitchHeightOffset;
 b = Damping;
 
-clear FootLink LowerLink HalfBody UpperLink
+clear FootLink LowerLink HalfBody UpperLink Boom
 
 
 H = simplify(subs(H));

@@ -32,3 +32,8 @@ HalfBody.I = 0.01491024833;% kg*m^2
 UpperLink.I = 0.00060093368; % kg*m^2
 LowerLink.I = 0.00465965863; % kg*m^2
 FootLink.I = 0.00736996850; % kg*m^2
+
+% Boom
+Boom.yawRadius = 2.575; % m
+Boom.pitchRadius = 2.493; % m
+Boom.pitchHeightOffset = 0.101; % m
