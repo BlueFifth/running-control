@@ -124,9 +124,9 @@ C = simplify(C);
 syms t1 t2 b bho br 'real'
 % Boom compensation:
 m_bot = mb + 2*ml1 + ml2 + ml3;
-phi = asin((y-bho)/br)
+phi = asin((y-bho)/br) %[output:24a1c786]
 Fyg = m_bot*grav*cos(phi);
-Fyc = m_bot*sin(phi)*(dy/cos(phi))^2/br
+Fyc = m_bot*sin(phi)*(dy/cos(phi))^2/br %[output:0fb01497]
 torque = [0;Fyg+Fyc-m_bot*grav;t1;t2;0;0];
 B = diag([0, 0, b, b, 0, 0]);
 
@@ -206,7 +206,7 @@ clear FootLink LowerLink HalfBody UpperLink Boom
 H = simplify(subs(H));
 dH = simplify(subs(dH));
 J = simplify(subs(J));
-dJ = simplify(subs(dJ)) %[output:24a1c786]
+dJ = simplify(subs(dJ)) %[output:0f298b62]
 M = simplify(subs(M));
 G = simplify(subs(G));
 C = simplify(subs(C));
@@ -223,7 +223,7 @@ H_calc_func = matlabFunction(H, "File","SimFunctions/H_calc_func", "Vars",[th1 t
 M_calc_func = matlabFunction(M, "File","SimFunctions/M_calc_func", "Vars",[x y th1 th2 ph1 ph2]);
 C_calc_func = matlabFunction(C, "File","SimFunctions/C_calc_func", "Vars",[x y th1 th2 ph1 ph2 dx dy dth1 dth2 dph1 dph2]);
 G_calc_func = matlabFunction(G, "File","SimFunctions/G_calc_func", "Vars",[x y th1 th2 ph1 ph2]);
-Q_t_calc_func = matlabFunction(Q_t, "File","SimFunctions/Q_t_calc_func", "Vars",[th1 th2 ph1 ph2 dth1 dth2 dph1 dph2 t1 t2 ]);
+Q_t_calc_func = matlabFunction(Q_t, "File","SimFunctions/Q_t_calc_func", "Vars",[x y th1 th2 ph1 ph2 dx dy dth1 dth2 dph1 dph2 t1 t2 ]);
 %%
 %[text] ## Foot kinematics function
 % get the position and velocity of the foot to use when determining grf
@@ -273,5 +273,11 @@ end
 %   data: {"dataType":"symbolic","outputData":{"name":"r_body","value":"\\left(\\begin{array}{c}\nx\\\\\n\\mathrm{cby}+y\n\\end{array}\\right)"}}
 %---
 %[output:24a1c786]
+%   data: {"dataType":"symbolic","outputData":{"name":"phi","value":"-\\mathrm{asin}\\left(\\frac{\\mathrm{bho}-y}{\\mathrm{br}}\\right)"}}
+%---
+%[output:0fb01497]
+%   data: {"dataType":"symbolic","outputData":{"name":"Fyc","value":"\\frac{{\\mathrm{dy}}^2 \\,{\\left(\\mathrm{bho}-y\\right)}\\,{\\left(\\mathrm{mb}+2\\,{\\textrm{ml}}_1 +{\\textrm{ml}}_2 +{\\textrm{ml}}_3 \\right)}}{{\\mathrm{br}}^2 \\,{\\left(\\frac{{{\\left(\\mathrm{bho}-y\\right)}}^2 }{{\\mathrm{br}}^2 }-1\\right)}}"}}
+%---
+%[output:0f298b62]
 %   data: {"dataType":"symbolic","outputData":{"name":"dJ","value":"\\begin{array}{l}\n\\left(\\begin{array}{cccccc}\n0 & 0 & -{\\textrm{dth}}_1 \\,{\\left(\\sigma_5 +\\sigma_2 +\\frac{349\\,\\cos \\left({\\textrm{th}}_1 \\right)}{2000}\\right)}-{\\textrm{dph}}_1 \\,{\\left(\\sigma_5 +\\sigma_2 \\right)} & 0 & -{\\left({\\textrm{dph}}_1 +{\\textrm{dth}}_1 \\right)}\\,{\\left(\\frac{21\\,\\sin \\left(\\sigma_3 \\right)}{800}+\\sigma_2 \\right)} & 0\\\\\n0 & 0 & -{\\textrm{dph}}_1 \\,{\\left(\\sigma_4 +\\sigma_1 \\right)}-{\\textrm{dth}}_1 \\,{\\left(\\sigma_4 +\\sigma_1 +\\frac{349\\,\\sin \\left({\\textrm{th}}_1 \\right)}{2000}\\right)} & 0 & {\\left({\\textrm{dph}}_1 +{\\textrm{dth}}_1 \\right)}\\,{\\left(\\frac{21\\,\\cos \\left(\\sigma_3 \\right)}{800}-\\sigma_1 \\right)} & 0\n\\end{array}\\right)\\\\\n\\mathrm{}\\\\\n\\textrm{where}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_1 =\\frac{591\\,\\sin \\left({\\textrm{ph}}_1 +{\\textrm{th}}_1 \\right)}{2000}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_2 =\\frac{591\\,\\cos \\left({\\textrm{ph}}_1 +{\\textrm{th}}_1 \\right)}{2000}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_3 ={\\textrm{ph}}_1 +{\\textrm{th}}_1 +\\frac{2\\,\\pi }{9}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_4 =\\frac{21\\,\\sin \\left(\\sigma_6 \\right)}{800}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_5 =\\frac{21\\,\\cos \\left(\\sigma_6 \\right)}{800}\\\\\n\\mathrm{}\\\\\n\\;\\;\\sigma_6 ={\\textrm{ph}}_1 +{\\textrm{th}}_1 +\\frac{31\\,\\pi }{18}\n\\end{array}"}}
 %---
