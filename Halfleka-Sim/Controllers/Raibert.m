@@ -63,6 +63,7 @@ switch state
         if (footHeight <=0)&&(dy<0) % On foot touching ground go to COMPRESSION
             state = 2;
             landTime = time;
+            x_f_des = x_f;
         end
     case 2 % COMPRESSION
         % Let spring compress
