@@ -10,6 +10,7 @@ function out = Raibert(th1, th2, dth1, dth2, footHeight, time,dx, dy)
     % Params:
     Ts = 0.15;
     Kdx = 0.1;
+    % Edit to swap kdx negative
     dx_d = 2;
 
 

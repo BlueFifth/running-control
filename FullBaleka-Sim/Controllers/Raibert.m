@@ -12,7 +12,8 @@ function out = Raibert(th1, th2,th3, th4, dth1, dth2,dth3, dth4, footHeight_f, f
     
     % Params:
     Ts = 0.12;
-    Kdx = 0.1;
+    Kdx = -0.05;
+    % Kdx = 0.1;
     dx_d = 2;
 
     FloatLeg = 0.25;
