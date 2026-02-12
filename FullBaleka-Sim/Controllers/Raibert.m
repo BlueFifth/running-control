@@ -1,6 +1,6 @@
 function out = Raibert(th1, th2,th3, th4, dth1, dth2,dth3, dth4, footHeight_f, footHeight_b, time, dx, dy)
     % Raibert hopping state machine
-    persistent state landTime dR_f dR_b VLcmd_f VLcmd_b x_f_des
+    persistent state landTime dR_f dR_b VLcmd_f VLcmd_b x_f_des dTh_f dTh_b
     % State variable
     % 0 = SETUP
     % 1 = FLIGHT (front)
@@ -11,8 +11,8 @@ function out = Raibert(th1, th2,th3, th4, dth1, dth2,dth3, dth4, footHeight_f, f
     % 6 = THRUST (back)
     
     % Params:
-    Ts = 0.12;
-    Kdx = -0.05;
+    Ts = 0.15;
+    Kdx = -0.1;
     % Kdx = 0.1;
     dx_d = 2;
 
@@ -32,7 +32,7 @@ function out = Raibert(th1, th2,th3, th4, dth1, dth2,dth3, dth4, footHeight_f, f
     % Landing
     VL_landing.r_des = GroundLeg;
     VL_landing.KPr = 1000;
-    VL_landing.KDr =40;
+    VL_landing.KDr =150;
     VL_landing.KPth = 200;
     VL_landing.KDth = 20;
 
@@ -61,9 +61,9 @@ function out = Raibert(th1, th2,th3, th4, dth1, dth2,dth3, dth4, footHeight_f, f
     % Compress
     VL_compress.r_des = GroundLeg;
     VL_compress.KPr = 1500;
-    VL_compress.KDr =50;
-    VL_compress.KPth = 600;
-    VL_compress.KDth = 20;
+    VL_compress.KDr = 75;
+    VL_compress.KPth = 800;
+    VL_compress.KDth = 80;
 
     VL_compress.dr_des = 0;
     VL_compress.dth_des = 0;
@@ -74,10 +74,10 @@ function out = Raibert(th1, th2,th3, th4, dth1, dth2,dth3, dth4, footHeight_f, f
     % Thrust
 
     VL_thrust.r_des = 0.6;
-    VL_thrust.KPr = 7000;
+    VL_thrust.KPr = 10000;
     VL_thrust.KDr =0;
-    VL_thrust.KPth = 800;
-    VL_thrust.KDth = 50;
+    VL_thrust.KPth = 600;
+    VL_thrust.KDth = 60;
 
     VL_thrust.dr_des = 0;
     VL_thrust.dth_des = 0;
@@ -92,6 +92,9 @@ function out = Raibert(th1, th2,th3, th4, dth1, dth2,dth3, dth4, footHeight_f, f
         dR_f = 0;
         dR_b = 0;
         x_f_des = 0;
+        groundheight= 0;
+        dTh_f = 0;
+        dTh_b = 0;
     end
 
 switch state
@@ -116,7 +119,7 @@ switch state
         VLcmd_f.th_des = -pi/2 +asin(x_f/R_f);
 
         VLcmd_b = VL_float;
-        VLcmd_b.th_des = -pi/2 + asin(x_f_des/R_b);
+        VLcmd_b.th_des = -pi/2;% + asin(x_f_des/R_b);
 
 
         if (footHeight_f <=0)&&(dy<0) % On foot touching ground go to COMPRESSION
@@ -130,10 +133,10 @@ switch state
         VLcmd_f.th_des = -pi/2- asin(x_f_des/R_f); 
 
         VLcmd_b = VL_float;
-        VLcmd_b.th_des = -pi/2 + asin(x_f_des/R_b);
+        VLcmd_b.th_des = -pi/2;% + asin(x_f_des/R_b);
 
         % When leg stops compressing (dR = 0) go to THRUST
-        if (((time-landTime)>0.05)&&(dR_f>0)) 
+        if (((time-landTime)>0.05)&&(dTh_f>0)) 
             state = 3;
         end
     case 3 % THRUST (front)
@@ -142,15 +145,15 @@ switch state
         VLcmd_f.th_des = -pi/2 - asin(x_f_des/R_f);
 
         VLcmd_b = VL_float;
-        VLcmd_b.th_des = -pi/2 + asin(x_f_des/R_b);
+        VLcmd_b.th_des = -pi/2;% + asin(x_f_des/R_b);
 
-        if (footHeight_f>0.01)%&&(dy>0))% ||((th1>3*pi/2)||(th2<-pi/2))
+        if (footHeight_f> 0.01)%&&(dy>0))% ||((th1>3*pi/2)||(th2<-pi/2))
             state =4;
         end
 
     case 4 % FLIGHT (back)
         VLcmd_f = VL_float;
-        VLcmd_f.th_des = -pi/2 + asin(x_f_des/R_f);
+        VLcmd_f.th_des = -pi/2;% + asin(x_f_des/R_f);
 
         VLcmd_b = VL_landing;
         VLcmd_b.th_des = -pi/2 + asin(x_f/R_b);
@@ -162,32 +165,33 @@ switch state
         end
     case 5 % COMPRESSION (back)
         VLcmd_f = VL_float;
-        VLcmd_f.th_des = -pi/2 + asin(x_f_des/R_f);
+        VLcmd_f.th_des = -pi/2;% + asin(x_f_des/R_f);
 
         VLcmd_b = VL_compress;
         VLcmd_b.th_des = -pi/2- asin(x_f_des/R_b); 
 
         % When leg stops compressing (dR = 0) go to THRUST
-        if (((time-landTime)>0.05)&&(dR_b>0)) 
+        if (((time-landTime)>0.05)&&(dTh_b>0)) 
             state = 6;
         end
     case 6 % THRUST (back)
         % Apply upwards thrust force
         VLcmd_f = VL_float;
-        VLcmd_f.th_des = -pi/2 + asin(x_f_des/R_f);
+        VLcmd_f.th_des = -pi/2;% + asin(x_f_des/R_f);
 
         VLcmd_b = VL_thrust;
         VLcmd_b.th_des = -pi/2 - asin(x_f_des/R_b);
 
-        if (footHeight_b>0.01)%&&(dy>0))% ||((th1>3*pi/2)||(th2<-pi/2))
+        if (footHeight_b> 0.01)%&&(dy>0))% ||((th1>3*pi/2)||(th2<-pi/2))
             state =1;
         end
 
 end
     cmd_f = BasicCompliance(th1, th2, dth1, dth2, VLcmd_f);
     dR_f = cmd_f(5);
-
+    dTh_f = cmd_f(6);
     cmd_b = BasicCompliance(th3, th4, dth3, dth4, VLcmd_b);
     dR_b = cmd_b(5);
+    dTh_b = cmd_b(6);
     out = [cmd_f, cmd_b, state];
 end

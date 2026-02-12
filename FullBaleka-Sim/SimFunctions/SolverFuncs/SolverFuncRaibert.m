@@ -33,7 +33,6 @@ function out = SolverFuncRaibert(time, q)
 
     foot_b = foot_Func(x, y, th3, th4, ph3, dx, dy, dth3, dth4, dph3);
     foot_b = reshape(foot_b, [4,1]);
-
     persistent groundheight_f groundheight_b contact_f contact_b
     if time == 0
         groundheight_f = 0;
@@ -49,8 +48,10 @@ function out = SolverFuncRaibert(time, q)
     t4 = t(10);
 
     u = [t1;t2;t3;t4];
-    mu = 0.6;
-
+    % mu = 1;
+    if time >0.49
+        bleh = 0;
+    end
     % lambda_f_contact = lambda_contact_calc_func(q, dq, u);
     % Find if feet are contacting:
     if ~contact_f && (foot_f(2) <= 0) %in contact with ground
@@ -61,11 +62,11 @@ function out = SolverFuncRaibert(time, q)
             contact_b = true;
             groundheight_b = foot_b(2) + 1e-5; 
     end
-
+    
     % FRONT ONLY
     if (contact_f)&&(~contact_b)
- 
-        % if (foot_f(2))<groundheight_f - 1e-5 % Foot slipping below ground - correct groundheight
+
+        % if (foot_f(2)+ 1e-5)<groundheight_f  % Foot slipping below ground - correct groundheight
         %     groundheight_f = foot_f(2) + 1e-5;
         % end
 
@@ -74,7 +75,7 @@ function out = SolverFuncRaibert(time, q)
         end
         lambda_f_contact = lambda_f_contact_calc_func(q, dq, u);
         if lambda_f_contact(6) >= 0 % Ground reaction force positive - apply it
-            lambda_f_contact(5) = max(min(lambda_f_contact(5), lambda_f_contact(6)*mu), -lambda_f_contact(6)*mu);
+            % lambda_f_contact(5) = max(min(lambda_f_contact(5), lambda_f_contact(6)*mu), -lambda_f_contact(6)*mu);
             lambda_out = [lambda_f_contact;0;0];
             ddq = ddq_f_contact_calc_func(q, dq, u, lambda_f_contact);
         else % Ground reaction force -ve, ignore it
@@ -84,7 +85,7 @@ function out = SolverFuncRaibert(time, q)
         end
         % BACK ONLY
     elseif (~contact_f)&&(contact_b)
-        % if (foot_b(2))<groundheight_b - 1e-5 % Foot slipping below ground - correct groundheight
+        % if (foot_b(2)+ 1e-5)<groundheight_b  % Foot slipping below ground - correct groundheight
         %     groundheight_b = foot_b(2) + 1e-5;
         % end
 
@@ -93,7 +94,7 @@ function out = SolverFuncRaibert(time, q)
         end
         lambda_b_contact = lambda_b_contact_calc_func(q, dq, u);
         if lambda_b_contact(6) >= 0 % Ground reaction force positive - apply it
-            lambda_b_contact(5) = max(min(lambda_b_contact(5), lambda_b_contact(6)*mu), -lambda_b_contact(6)*mu);
+            % lambda_b_contact(5) = max(min(lambda_b_contact(5), lambda_b_contact(6)*mu), -lambda_b_contact(6)*mu);
             lambda_out = [lambda_b_contact(1:4);0;0;lambda_b_contact(5:6)];
             ddq = ddq_b_contact_calc_func(q, dq, u, lambda_b_contact);
         else % Ground reaction force -ve, ignore it
@@ -120,19 +121,19 @@ function out = SolverFuncRaibert(time, q)
         lambda_fb_contact = lambda_fb_contact_calc_func(q, dq, u);
 
         if (lambda_fb_contact(6) >= 0)&&(lambda_fb_contact(8) >= 0) % Both feet have +ve GRF
-            lambda_fb_contact(5) = max(min(lambda_fb_contact(5), lambda_fb_contact(6)*mu), -lambda_fb_contact(6)*mu);
-            lambda_fb_contact(7) = max(min(lambda_fb_contact(7), lambda_fb_contact(8)*mu), -lambda_fb_contact(8)*mu);
+            % lambda_fb_contact(5) = max(min(lambda_fb_contact(5), lambda_fb_contact(6)*mu), -lambda_fb_contact(6)*mu);
+            % lambda_fb_contact(7) = max(min(lambda_fb_contact(7), lambda_fb_contact(8)*mu), -lambda_fb_contact(8)*mu);
             lambda_out = lambda_fb_contact;
             ddq = ddq_fb_contact_calc_func(q, dq, u, lambda_fb_contact);
 
         elseif (lambda_fb_contact(6) < 0) && (lambda_fb_contact(8) >= 0)% Front foot has -ve GRF, only apply back
             lambda_b_contact = lambda_b_contact_calc_func(q, dq, u);
-            lambda_b_contact(5) = max(min(lambda_b_contact(5), lambda_b_contact(6)*mu), -lambda_b_contact(6)*mu);
+            % lambda_b_contact(5) = max(min(lambda_b_contact(5), lambda_b_contact(6)*mu), -lambda_b_contact(6)*mu);
             lambda_out = [lambda_b_contact(1:4);0;0;lambda_b_contact(5:6)];
             ddq = ddq_b_contact_calc_func(q, dq, u, lambda_b_contact);
         elseif (lambda_fb_contact(6) >= 0) && (lambda_fb_contact(8) < 0)% Back foot has -ve GRF, only apply front
             lambda_f_contact = lambda_f_contact_calc_func(q, dq, u);
-            lambda_f_contact(5) = max(min(lambda_f_contact(5), lambda_f_contact(6)*mu), -lambda_f_contact(6)*mu);
+            % lambda_f_contact(5) = max(min(lambda_f_contact(5), lambda_f_contact(6)*mu), -lambda_f_contact(6)*mu);
             lambda_out = [lambda_f_contact;0;0];
             ddq = ddq_f_contact_calc_func(q, dq, u, lambda_f_contact);
 
@@ -146,6 +147,7 @@ function out = SolverFuncRaibert(time, q)
         ddq = ddq_flight_calc_func(q, dq, u, lambda);
         lambda_out = [lambda;0;0;0;0];
     end
+
     out.ddq = ddq;
     out.foot = [foot_f;foot_b];
     out.controller = t;
